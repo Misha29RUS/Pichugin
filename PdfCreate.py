@@ -6,6 +6,8 @@ from datetime import datetime
 from statistics import mean
 import matplotlib.pyplot as plt
 import numpy as np
+import pdfkit
+from jinja2 import Environment, FileSystemLoader
 
 
 class SalaryDict:
@@ -126,7 +128,7 @@ class Total:
         print(f"Доля вакансий по городам (в порядке убывания): "
               f"{dynamics_job_count_city}")
         Report(self.job_name, dynamics_salary_by_year, dynamics_count_by_year, dynamics_job_salary_year,
-               dynamics_job_count_year, dynamics_job_salary_city, dynamics_job_count_city).generate_image()
+               dynamics_job_count_year, dynamics_job_salary_city, dynamics_job_count_city).generate_pdf()
 
 
 class Report:
@@ -139,6 +141,9 @@ class Report:
         self.dynamics_job_count_year = dynamics_job_count_year
         self.dynamics_job_salary_city = dynamics_job_salary_city
         self.dynamics_job_count_city = dynamics_job_count_city
+        self.tab_first = []
+        self.tab_second = []
+        self.tab_third = []
 
     def generate_excel(self):
         wb = openpyxl.Workbook()
@@ -153,12 +158,14 @@ class Report:
         wb.add_named_style(ns_header)
         wb.add_named_style(ns_border)
         year_sheet = wb['Статистика по годам']
-        year_sheet.append(['Год', 'Средняя зарплата', f'Средняя зарплата - {self.job_name}',
-                           'Количество вакансий', f'Количество вакансий - {self.job_name}'])
+        headers = ['Год', 'Средняя зарплата', f'Средняя зарплата - {self.job_name}',
+                   'Количество вакансий', f'Количество вакансий - {self.job_name}']
+        self.tab_first.append(headers)
+        year_sheet.append(headers)
         for year, value in self.dynamics_salary_by_year.items():
-            year_sheet.append(
-                [year, value, self.dynamics_job_salary_year[year], self.dynamics_count_by_year[year],
-                 self.dynamics_job_count_year[year]])
+            line = [year, value, self.dynamics_job_salary_year[year], self.dynamics_count_by_year[year], self.dynamics_job_count_year[year]]
+            self.tab_first.append(line)
+            year_sheet.append(line)
         dims = {}
         for row in year_sheet.rows:
             for cell in row:
@@ -170,11 +177,18 @@ class Report:
             year_sheet.column_dimensions[column].width = value + 2
 
         year_city = wb['Статистика по городам']
-        year_city.append(['Город', 'Уровень зарплат', '', 'Город', 'Доля вакансий'])
+        headers_second = ['Город', 'Уровень зарплат', '', 'Город', 'Доля вакансий']
+        self.tab_second.append(headers_second[:2])
+        self.tab_third.append(headers_second[3:])
+        year_city.append(headers_second)
         a = iter(self.dynamics_job_count_city)
         for city, value in self.dynamics_job_salary_city.items():
             city_count = next(a)
-            year_city.append([city, value, '', city_count, self.dynamics_job_count_city[city_count]])
+            line_first = [city, value]
+            line_second = [city_count, self.dynamics_job_count_city[city_count]]
+            year_city.append([*line_first, '', *line_second])
+            self.tab_second.append(line_first)
+            self.tab_third.append(line_second)
         dims = {}
         for row in year_city.rows:
             for cell in row:
@@ -191,6 +205,24 @@ class Report:
             year_city.column_dimensions[column].width = value + 2
 
         wb.save('report.xlsx')
+
+    def generate_pdf(self):
+        env = Environment(loader=FileSystemLoader('.'))
+        template = env.get_template("pdf_template.html")
+        self.generate_excel()
+        pdf_template = template.render({
+            'image': 'graph.png',
+            'first_table': self.tab_first[1:],
+            'first_table_header': self.tab_first[0],
+            'second_table': self.tab_second[1:],
+            'second_table_header': self.tab_second[0],
+            'third_table': list(
+                map(lambda cell: (cell[0], '{:.2f}%'.format(cell[1] * 100).replace('.', ',')), self.tab_third[1:])),
+            'third_table_header': self.tab_third[0],
+            'job_name': self.job_name
+        })
+        config = pdfkit.configuration(wkhtmltopdf=r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
+        pdfkit.from_string(pdf_template, 'report.pdf', configuration=config, options={"enable-local-file-access": ""})
 
     def generate_image(self):
         graph = plt.figure()
@@ -269,8 +301,9 @@ def quick_quit(message):
     exit()
 
 
-file_name = input("Введите название файла: ")
-job = input("Введите название профессии: ")
-data = csv_reader(file_name)
-if data is not None:
-    Total().get_data([Vacancy(i) for i in data], job).print_result()
+def pdf_create():
+    file_name = input("Введите название файла: ")
+    job = input("Введите название профессии: ")
+    data = csv_reader(file_name)
+    if data is not None:
+        Total().get_data([Vacancy(i) for i in data], job).print_result()
