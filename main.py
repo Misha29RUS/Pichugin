@@ -8,6 +8,7 @@ def Creator():
         PdfCreate.pdf_create()
     elif input_person == "Вакансии":
         TableCreate.table_create()
+        # TableCreate.table_create(2)
     else:
         print("Данные не корректны")
         exit()
