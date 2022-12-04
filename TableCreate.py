@@ -72,10 +72,22 @@ translator = {
 
 
 class UserInput:
+    """Класс пользовательского ввода
+    Attributes:
+        file_name (str): Название файла
+        filter_param (str): Параметр фильтрации
+        sort_param (str): Параметр сортировки
+        reverse_sort_param (str): Обратная сортировка
+        distance_param (str): Диапозон вывода
+        columns_param (str): Столбцы вывода
+    """
     sort_phrases = ["Название", "Описание", "Навыки", "Опыт работы",
                     "Премиум-вакансия", "Компания", "Оклад", "Название региона", "Дата публикации вакансии", "Идентификатор валюты оклада"]
 
     def __init__(self):
+        """
+        Инициализирует объекты UserInput
+        """
         self.file_name = input("Введите название файла: ")
         self.filter_param = input("Введите параметр фильтрации: ")
         self.sort_param = input("Введите параметр сортировки: ")
@@ -87,6 +99,13 @@ class UserInput:
         self.reverse_sort_param = self.check_reverse_sort_param(self.reverse_sort_param)
 
     def check_filter_param(self, filter_param):
+        """Проверка параметра фильтрации
+        Args:
+            filter_param (str): Параметр фильтрации
+
+        Returns:
+            str: Текст ошибки или передаваемый параметр фильтрации, в случае отсутствия ошибки
+        """
         if filter_param != "" and ": " not in filter_param:
             quick_quit("Формат ввода некорректен")
 
@@ -95,18 +114,38 @@ class UserInput:
         return filter_param
 
     def check_sort_param(self, sort_param):
+        """Проверка параметра сортировки
+        Args:
+            sort_param (str): Параметр сортировки
+
+        Returns:
+            str: Текст ошибки или передаваемый параметр сортировки, в случае отсутствия ошибки
+        """
         if sort_param != "" and sort_param not in self.sort_phrases:
             quick_quit("Параметр сортировки некорректен")
         return sort_param
 
     @staticmethod
     def check_reverse_sort_param(reverse_sort_param):
+        """Проверка обратной сортировка
+        Args:
+            reverse_sort_param (str): Обратная сортировка
+
+        Returns:
+            str: Текст ошибки или передаваемый параметр обратной сортировки, в случае отсутствия ошибки
+        """
         if reverse_sort_param not in ["Да", "Нет", ""]:
             quick_quit("Порядок сортировки задан некорректно")
         return reverse_sort_param == "Да"
 
     @staticmethod
     def check_names(headers):
+        """ Проверка названий вводимых пользователем столбцов
+        Args:
+           headers (list): Список столбцов вывода
+
+        Returns: Изменённые сталбцы(добавления столбца № перед всеми другими),в случае соответствии правилам ввода
+        """
         if "" in headers:
             headers = ["Название", "Описание", "Навыки", "Опыт работы",
                      "Премиум-вакансия", "Компания", "Оклад", "Название региона", "Дата публикации вакансии"]
@@ -115,7 +154,19 @@ class UserInput:
 
 
 class DataSet:
+    """Класс чтения и подготовки данных из CSV-файла
+    Attributes:
+        data (list): Все данные
+        names (str): Заголовки
+        all_data (list): Все вакансии
+    """
     def __init__(self, file_name):
+        """Проверяет пустоту файла и инициализирует объекты DataSet
+
+        Args:
+            file_name (str): Название файла
+
+        """
         if os.stat(file_name).st_size == 0:
             quick_quit("Пустой файл")
         self.data = [row for row in csv.reader(open(file_name, encoding="utf_8_sig"))]
@@ -126,7 +177,29 @@ class DataSet:
 
 
 class Vacancy:
+    """ Класс установки всех основных полей вакансии
+    Attributes:
+        name (str): Название вакансии
+        description (str): Описание вакансии
+        key_skills (str or list): Навыки
+        experience_id (str): Опыт работы
+        premium (str): Премиум вакансия
+        employer_name (str):
+        salary_from (str): Нижняя граница зарплаты
+        salary_to (str): Верхняя граница зарплаты
+        salary_gross (str): Размер заработной платы до вычета всех налогов(да или нет)
+        salary_currency (str): Валюта, в которой указана зарплата
+        area_name (str): Название города
+        full_published_time (str): Полное время публикации
+        published_at (str):  Сокращённая дата публикации
+        salary (str): Зарплата
+    """
     def __init__(self, pers_data):
+        """ Инициализирует объекты Vacancy
+
+        Args:
+            pers_data (dict): Данные по всем вакансиям
+        """
         self.name = str
         self.description = str
         self.key_skills = str or list
@@ -147,6 +220,13 @@ class Vacancy:
         self.salary = f'{self.salary_from} - {self.salary_to} ({self.salary_currency}) ({self.salary_gross})'
 
     def formatter(self, key, value):
+        """ Метод для форматирования значения передоваемого ключа
+        Args:
+            key (str): Ключ
+            value (str): Значение
+        Returns:
+            str: Отформатированные данные соответствующего ключа
+        """
         if key == "key_skills" and type(value) == list:
             return "\n".join(value)
         elif key == "premium":
@@ -167,6 +247,12 @@ class Vacancy:
             return value
 
     def filter_condition(self, filter_param):
+        """Метод для проверки соответствия параметру фильтрации
+        Args:
+            filter_param (str): Параметр фильтрации
+        Returns:
+            bool: Соответствует или нет(true or false)
+        """
         if filter_param == "":
             return True
         key, value = filter_param.split(": ")
@@ -184,7 +270,15 @@ class Vacancy:
 
 
 class Table:
+    """ Класс для фармирования и заполнения таблицы
+
+    Attributes:
+        table (dict): Шаблон таблицы
+    """
     def __init__(self):
+        """Инициализирует объекты Vacancy
+
+        """
         self.table = PrettyTable(["№", "Название", "Описание", "Навыки", "Опыт работы", "Премиум-вакансия",
                                   "Компания", "Оклад", "Название региона", "Дата публикации вакансии"])
         self.table.hrules = 1
@@ -192,6 +286,13 @@ class Table:
         self.table.max_width = 20
 
     def print(self, all_data, start, end, list_names):
+        """ Визуализация таблицы
+        Args:
+            all_data (list): Все вакансии
+            start (int): Начала обрезки таблицы
+            end (int): Конец обрезки таблицы
+            list_names (list): Колонки таблицы
+        """
         for index, data in enumerate(all_data):
             row = [index + 1]
             for name in self.table.field_names[1:]:
@@ -203,7 +304,17 @@ class Table:
         print(self.table.get_string(start=start, end=end, fields=list_names))
 
 
-def get_vacancies(all_data, filter_param, sort_param, reverse_sort_param):
+def get_vacancies(all_data, filter_param, sort_param, reverse_sort_param, names):
+    """ Метод получения вакансии
+    Args:
+        all_data (list): Все вакансии
+        filter_param (str): Параметр фильтрации
+        sort_param (str): Параметр сортировки
+        reverse_sort_param (boll): Обратная сортировка
+        names (list): Заголовки
+    Returns:
+        list: лист с вакансиями
+    """
     data = []
     for pers_data in all_data:
         parsed_data = Vacancy(dict(zip(names, map(parse_html, pers_data))))
@@ -213,6 +324,14 @@ def get_vacancies(all_data, filter_param, sort_param, reverse_sort_param):
 
 
 def sort_vacancies(all_data, sort_param, reverse_sort_param):
+    """Метод сортировки листа с вакансиями
+    Args:
+        all_data (list): Все вакансии
+        sort_param (str): Параметр сортировки
+        reverse_sort_param (bool): Обратная сортировка
+    Returns:
+        list: Отсортированный или неостсортированный лист с вакансиями
+    """
     if sort_param == "":
         return all_data
 
@@ -220,6 +339,11 @@ def sort_vacancies(all_data, sort_param, reverse_sort_param):
 
 
 def get_sort_func(data, sort_param):
+    """ Метод сортировки
+    Args:
+        data (Vacancy): Вакансия
+        sort_param (str): Параметр сортировки
+    """
     if sort_param == "Навыки":
         return len(data.key_skills.split("\n"))
     elif sort_param == "Оклад":
@@ -234,6 +358,10 @@ def get_sort_func(data, sort_param):
 
 
 def parse_html(value):
+    """ Метод отчистки от html
+    Args:
+        value (str): Значение
+    """
     result = [" ".join(word.split()) for word in re.sub("<.*?>", "", value).replace("\r\n", "\n").split('\n')]
     if len(result) == 1:
         return result[0]
@@ -241,6 +369,12 @@ def parse_html(value):
 
 
 def print_vacancies(all_data, distance, columns):
+    """ Метод печати вакансий
+    Args:
+        all_data (list): Все вакансии
+        distance(list): Диапозон вывода
+        columns (list): Колонки таблицы
+    """
     if len(all_data) == 0:
         quick_quit("Ничего не найдено")
     if len(distance) >= 1:
@@ -256,15 +390,21 @@ def print_vacancies(all_data, distance, columns):
 
 
 def quick_quit(message):
+    """Метод для выдачи ошибки и выхода из программы.
+
+    Args:
+        message (str): Текст сообщение об ошибке
+    """
     print(message)
     exit()
 
 
 def table_create():
+    """Метод вызова других методов для формирования таблицы
+
+    """
     inputed = UserInput()
     dataset = DataSet(inputed.file_name)
     (names, all_vac_data) = dataset.names, dataset.all_data
-    data = get_vacancies(all_vac_data, inputed.filter_param, inputed.sort_param, inputed.reverse_sort_param)
+    data = get_vacancies(all_vac_data, inputed.filter_param, inputed.sort_param, inputed.reverse_sort_param, names)
     print_vacancies(data, inputed.distance_param, inputed.columns_param)
-
-

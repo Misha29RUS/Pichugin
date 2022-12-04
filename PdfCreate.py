@@ -1,31 +1,64 @@
 import csv
-import openpyxl
-import openpyxl.styles.numbers
-from openpyxl.styles import NamedStyle, Border, Side, Font
 from datetime import datetime
 from statistics import mean
+
 import matplotlib.pyplot as plt
 import numpy as np
+import openpyxl
+import openpyxl.styles.numbers
 import pdfkit
 from jinja2 import Environment, FileSystemLoader
+from openpyxl.styles import NamedStyle, Border, Side, Font
 
 
 class SalaryDict:
+    """Класс для хранения и предоставления словаря по зарплате
+
+    Attributes:
+        salary_dictionary (dict): Словарь зарплат
+        __average_salary_dictionary (dict): Словарь средних зарплат
+    """
     def __init__(self):
+        """Инициализирует объекты SalaryDict
+
+        """
         self.salary_dictionary = {}
         self.__average_salary_dictionary = {}
 
     def add(self, key, salary):
+        """Добавление в словарь по ключу и зарплате
+
+        Args:
+            key (str): Ключ
+            salary (int): Зарплата
+
+        Returns:
+            dict: Возвращает словарь с добавленным значением
+        """
+
         if self.salary_dictionary.get(key) is None:
             self.salary_dictionary[key] = []
         return self.salary_dictionary[key].append(salary)
 
     def average_salary(self):
+        """Метод для формирования словаря средней заработной платы
+
+        Returns:
+            dict: Словарь средней заработной платы
+        """
         for key, value in self.salary_dictionary.items():
             self.__average_salary_dictionary[key] = int(mean(value))
         return self.__average_salary_dictionary
 
     def top_salary(self, top_cities):
+        """Метод для формирования словаря самых высокооплачеваемых зарплат
+
+        Args:
+            top_cities (list): Список городов
+
+        Returns:
+            dict: Словарь самых высокооплачеваемых зарплат
+        """
         self.average_salary()
         sorted_dictionary = dict(sorted(self.__average_salary_dictionary.items(), key=lambda x: x[1], reverse=True))
         top_salary_dictionary = {}
@@ -36,19 +69,37 @@ class SalaryDict:
 
 
 class CountDict:
+    """Класс для хранения и предоставления словаря по количеству
+
+    Attributes:
+        length (int): Длина словаря
+        count_dict (dict): Словарь по колличеству
+        city_list (list): Список городов
+        top_percentage_dict (dict): Словарь топ 10 вакансий по колличеству
+    """
     def __init__(self):
+        """
+        Инициализирует объекты CountDict
+        """
         self.length = 0
         self.count_dict = {}
         self.city_list = []
         self.top_percentage_dict = {}
 
     def add(self, key):
+        """ Добавление в словарь по ключу
+
+        Args:
+            key (str): Ключ
+        """
         if self.count_dict.get(key) is None:
             self.count_dict[key] = 0
         self.count_dict[key] += 1
         self.length += 1
 
     def percentage(self):
+        """Делает выборку по вакансиям от процента длины словаря
+        """
         percentage_dict = {}
         for key, value in self.count_dict.items():
             percentage = value / self.length
@@ -60,7 +111,22 @@ class CountDict:
 
 
 class Vacancy:
+    """Класс для операций(форматированию) по вакансиям
+
+    Attributes:
+        __dictionary_currency_to_rub (dict): Словарь для конвертации в рубли
+        job_name (str): Название профессии
+        salary (int): Зарплата вакансии
+        area_name (str): Город вакансии
+        year(int): Год публикации вакансии
+    """
+
     def __init__(self, fields):
+        """Инициализирует объекты Vacancy
+
+        Args:
+            fields (dict): Словарь вакансии
+        """
         self.__dictionary_currency_to_rub = {
             "AZN": 35.68,
             "BYR": 23.91,
@@ -82,7 +148,22 @@ class Vacancy:
 
 
 class Total:
+    """Класс для представления данных анализа вакансий
+
+
+    Attributes:
+        dynamics_salary_by_year (dict): Словарь оклад:год
+        dynamics_count_by_year (dict): Словарь колличества оклад:год
+        dynamics_job_salary_year (dict): Словарь работа:год
+        dynamics_job_count_year (dict):Словарь колличества оработа:год
+        dynamics_job_salary_city (dict): Словарь работа:город
+        dynamics_job_count_city (dict):Словарь колличества работа:город
+
+    """
     def __init__(self):
+        """Инициализирует объекты Total
+
+        """
         self.dynamics_salary_by_year = SalaryDict()
         self.dynamics_count_by_year = CountDict()
         self.dynamics_job_salary_year = SalaryDict()
@@ -91,6 +172,15 @@ class Total:
         self.dynamics_job_count_city = CountDict()
 
     def get_data(self, vacancies, job_name):
+        """Анализ данных по вакансиям
+
+        Args:
+           vacancies (list): Своварь вакансий
+           job_name (str): Название вводимой профессии
+
+        Returns:
+            self: Возвращает объект класса Total
+        """
         self.job_name = job_name
         for vacancy in vacancies:
             self.dynamics_salary_by_year.add(vacancy.year, vacancy.salary)
@@ -109,6 +199,9 @@ class Total:
         return self
 
     def print_result(self):
+        """Печатает результат анализа данных
+
+        """
         dynamics_salary_by_year = self.dynamics_salary_by_year.average_salary()
         dynamics_count_by_year = self.dynamics_count_by_year.count_dict
         dynamics_job_salary_year = self.dynamics_job_salary_year.average_salary()
@@ -131,9 +224,33 @@ class Total:
                dynamics_job_count_year, dynamics_job_salary_city, dynamics_job_count_city).generate_pdf()
 
 
-class Report:
+class Report():
+    """Класс для представления отчета по анализу вакансий
+    Attributes:
+        job_name (str): Название вводимой профессии
+        dynamics_salary_by_year (dict): Словарь оклад:год
+        dynamics_count_by_year (dict): Словарь колличества оклад:год
+        dynamics_job_salary_year (dict): Словарь работа:год
+        dynamics_job_count_year (dict):Словарь колличества оработа:год
+        dynamics_job_salary_city (dict): Словарь работа:город
+        dynamics_job_count_city (dict):Словарь колличества работа:город
+        tab_first (list): Первая таблица
+        tab_second (list): Вторая таблица
+        tab_third (list): Третья таблица
+    """
     def __init__(self, job_name, dynamics_salary_by_year, dynamics_count_by_year, dynamics_job_salary_year,
                  dynamics_job_count_year, dynamics_job_salary_city, dynamics_job_count_city):
+        """ Инициализация объектов Report
+
+        Args:
+            job_name (str): Название вводимой профессии
+            dynamics_salary_by_year (dict): Словарь оклад:год
+            dynamics_count_by_year (dict): Словарь колличества оклад:год
+            dynamics_job_salary_year (dict): Словарь работа:год
+            dynamics_job_count_year (dict):Словарь колличества оработа:год
+            dynamics_job_salary_city (dict): Словарь работа:город
+            dynamics_job_count_city (dict):Словарь колличества работа:город
+        """
         self.job_name = job_name
         self.dynamics_salary_by_year = dynamics_salary_by_year
         self.dynamics_count_by_year = dynamics_count_by_year
@@ -146,6 +263,9 @@ class Report:
         self.tab_third = []
 
     def generate_excel(self):
+        """Генерирует эксель-файл
+
+        """
         wb = openpyxl.Workbook()
         wb.active.title = 'Статистика по годам'
         wb.create_sheet('Статистика по городам')
@@ -207,6 +327,9 @@ class Report:
         wb.save('report.xlsx')
 
     def generate_pdf(self):
+        """Метод для генерации pdf файла
+
+        """
         env = Environment(loader=FileSystemLoader('.'))
         template = env.get_template("pdf_template.html")
         self.generate_excel()
@@ -225,6 +348,9 @@ class Report:
         pdfkit.from_string(pdf_template, 'report.pdf', configuration=config, options={"enable-local-file-access": ""})
 
     def generate_image(self):
+        """Метод для генерации изображения требуемых графиков
+
+        """
         graph = plt.figure()
         x_nums = np.arange(len(self.dynamics_salary_by_year.keys()))
         width = 0.4
@@ -275,6 +401,14 @@ class Report:
 
 
 def csv_reader(file_name):
+    """Производит чтение файла
+
+    Args:
+        file_name (str): Название файла
+
+    Return:
+        list: Возвращает список словарей с вакансиями
+    """
     global headers, lines
     reader = csv.reader(open(file_name, encoding="utf_8_sig"))
     try:
@@ -289,6 +423,15 @@ def csv_reader(file_name):
 
 
 def csv_filer(lines, headers):
+    """Заполняет список вакансиями
+
+    Args:
+        lines (list): Список вакансий
+        headers (list): Список заголовков
+
+    Returns:
+        list: Возвращает корректный список вакансий
+    """
     ans = []
     for line in lines:
         if len(line) == len(headers) and line.count('') == 0:
@@ -297,11 +440,19 @@ def csv_filer(lines, headers):
 
 
 def quick_quit(message):
+    """Метод для выдачи ошибки и выхода из программы.
+
+    Args:
+        message (str): Текст сообщение об ошибке
+    """
     print(message)
     exit()
 
 
 def pdf_create():
+    """Метод для создания pdf файла, вызывая другие методы.
+
+    """
     file_name = input("Введите название файла: ")
     job = input("Введите название профессии: ")
     data = csv_reader(file_name)
