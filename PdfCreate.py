@@ -1,6 +1,7 @@
 import csv
 from datetime import datetime
 from statistics import mean
+import doctest
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -126,6 +127,20 @@ class Vacancy:
 
         Args:
             fields (dict): Словарь вакансии
+
+        >>>vacancy = [Vacancy({'name': 'Программист','salary_from': '40000.0',
+        ...'salary_to': '55000.0', 'salary_currency': 'RUR', 'area_name': 'Москва',
+        ...'published_at': '2012-04-09T13:49:00+0400'})]
+        >>>type(Vacancy(vacancy)).__name__
+        'Vacancy'
+        >>>Vacancy(vacancy).job_name
+        'Программист'
+        >>>Vacancy(vacancy).salary
+        47500
+        >>>Vacancy(vacancy).area_name
+        'Москва'
+        >>>Vacancy(vacancy).year
+        2012
         """
         self.__dictionary_currency_to_rub = {
             "AZN": 35.68,
@@ -163,6 +178,23 @@ class Total:
     def __init__(self):
         """Инициализирует объекты Total
 
+        >>>test_param = Total()
+        >>>vacancy = [Vacancy({'name': 'Программист','salary_from': '40000.0',
+        ...'salary_to': '55000.0', 'salary_currency': 'RUR', 'area_name': 'Москва',
+        ...'published_at': '2012-04-09T13:49:00+0400'})]
+        >>>test_param.get_data(vacancy, 'Специалист')
+        >>>test_param.dynamics_count_by_year.count_dict
+        {2012: 1}
+        >>>test_param.dynamics_job_count_city.count_dict
+        {'Москва': 1}
+        >>>test_param.dynamics_job_count_year.count_dict
+        {2012: 0}
+        >>>test_param.dynamics_job_salary_city.salary_dictionary
+        {'Москва': [47500]}
+        >>>test_param.dynamics_job_salary_year.salary_dictionary
+        {2012: [0]}
+        >>>test_param.dynamics_salary_by_year.salary_dictionary
+        {2012: [47500]}
         """
         self.dynamics_salary_by_year = SalaryDict()
         self.dynamics_count_by_year = CountDict()
@@ -408,6 +440,15 @@ def csv_reader(file_name):
 
     Return:
         list: Возвращает список словарей с вакансиями
+
+
+    >>>test_param = csv_reader('vacancy_test_data.csv')
+    >>>len(test_param)
+    3
+    >>>test_param[0]['name']
+    'Специалист'
+    >>>test_param[1]['area_name']
+    '<html>Санкт-Петербург</html>'
     """
     global headers, lines
     reader = csv.reader(open(file_name, encoding="utf_8_sig"))
