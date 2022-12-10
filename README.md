@@ -8,6 +8,8 @@
 
 [Задание 3.2.2](#3.2.2) 
 
+[Задание 3.2.3](#3.2.3) 
+
 <a name="2.3.2"></a>
 # Задание 2.3.2
 
@@ -45,3 +47,8 @@
 
 ![image](https://user-images.githubusercontent.com/114404329/206873976-60018c86-6434-48cc-a5d4-eb69b2a6e35b.png)
 
+<a name="3.2.3"></a>
+
+# Задание 3.2.3
+
+![image](https://user-images.githubusercontent.com/114404329/206875856-528e59ef-c5ef-4bd1-9543-7417d87c2117.png)
