@@ -6,6 +6,10 @@
 
 [Задание 3.2.1](#3.2.1)
 
+[Задание 3.2.2](#3.2.2) 
+
+[Задание 3.2.3](#3.2.3) 
+
 <a name="2.3.2"></a>
 # Задание 2.3.2
 
@@ -31,3 +35,20 @@
 # Задание 3.2.1 
 
 ![image](https://user-images.githubusercontent.com/114404329/206851597-c575158a-f1b4-4faa-8c4c-efcbfd3a212c.png)
+
+<a name="3.2.2"></a>
+# Задание 3.2.2 
+
+## Многопоточная обработка 
+
+![image](https://user-images.githubusercontent.com/114404329/206873241-cec6c61c-20ef-4365-bd04-fdfe92fdfc34.png)
+
+## Однопоточная обработка 
+
+![image](https://user-images.githubusercontent.com/114404329/206873976-60018c86-6434-48cc-a5d4-eb69b2a6e35b.png)
+
+<a name="3.2.3"></a>
+
+# Задание 3.2.3
+
+![image](https://user-images.githubusercontent.com/114404329/206875856-528e59ef-c5ef-4bd1-9543-7417d87c2117.png)
