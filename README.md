@@ -1,5 +1,13 @@
 # Pichugin
-## Задание 2.3.2
+
+# Якорные ссылки на отчёты 
+
+[Задание 2.3.2](#2.3.2)
+
+[Задание 3.2.1](#3.2.1)
+
+<a name="2.3.2"></a>
+# Задание 2.3.2
 
 ## unittest
 
@@ -19,3 +27,7 @@
 
 ![result](https://user-images.githubusercontent.com/114404329/205512923-f421d99e-8d2f-429e-907a-ec53a9444215.PNG)
 
+<a name="3.2.1"></a>
+# Задание 3.2.1 
+
+![image](https://user-images.githubusercontent.com/114404329/206851597-c575158a-f1b4-4faa-8c4c-efcbfd3a212c.png)
