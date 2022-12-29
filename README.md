@@ -10,6 +10,9 @@
 
 [Задание 3.2.3](#3.2.3) 
 
+[Задание 3.3.1](#3.3.1) 
+
+
 <a name="2.3.2"></a>
 # Задание 2.3.2
 
@@ -52,3 +55,13 @@
 # Задание 3.2.3
 
 ![image](https://user-images.githubusercontent.com/114404329/206875856-528e59ef-c5ef-4bd1-9543-7417d87c2117.png)
+
+<a name="3.3.1"></a>
+
+# Задание 3.3.1
+
+![image (1)](https://user-images.githubusercontent.com/114404329/209985292-8b948111-c2d0-434c-a9f3-4ede41cbd479.png)
+
+![image (2)](https://user-images.githubusercontent.com/114404329/209985322-0c524b87-d839-4ef0-95e3-6f3880137e40.png)
+
+![image (3)](https://user-images.githubusercontent.com/114404329/209985362-9743344a-0cdf-4578-96ef-993569a8bbac.png)
