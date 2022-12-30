@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>3.4.2</title>
+        <style>
+            body{
+                font-family: Verdana, sans-serif;
+                text-align: center;
+            }
+            img{
+                width: 100%;
+                object-fit: contain;
+                -o-object-fit: contain;
+            }
+            table {
+                border-collapse: collapse;
+                width: 100%;
+            }
+            th {
+               padding: 5px;
+               border: 1px solid black;
+            }
+            td {
+               padding: 5px;
+               border: 1px solid black;
+            }
+        </style>
+</head>
+<body>
+    <h1>Аналитика по зарплатам и городам для профессии {{ name }}</h1>
+    <img src="C:\Users\misha\PycharmProjects\Pichugin\3.4.2\{{ graph }}">
+    {% macro get_by_year(dicts_by_year) -%}
+    {% for year, value in dicts_by_year[0].items() -%}
+        <tr>
+            <td>{{ year }}</td>
+            <td>{{ value }}</td>
+            <td>{{ dicts_by_year[1][year] }}</td>
+            <td>{{ dicts_by_year[2][year] }}</td>
+            <td>{{ dicts_by_year[3][year] }}</td>
+        </tr>
+    {%- endfor %}
+    {%- endmacro %}
+
+    <h2>Статистика по годам</h2>
+    <table>
+        <tr>
+            <th>Год</th>
+            <th>Средняя зарплата</th>
+            <th>Средняя зарплата - {{ name }}</th>
+            <th>Количество вакансий</th>
+            <th>Количество вакансий - {{ name }}</th>
+        </tr>
+        {{ get_by_year(dicts) }}
+    </table>
+</body>
+</html>
