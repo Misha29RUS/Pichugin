@@ -14,6 +14,8 @@
 
 [Задание 3.5.2](#3.5.2) 
 
+[Задание 3.5.3](#3.5.3) 
+
 <a name="2.3.2"></a>
 # Задание 2.3.2
 
@@ -72,4 +74,12 @@
 # Задание 3.5.2
 
 ![image](https://user-images.githubusercontent.com/114404329/210118015-e212037e-091f-49ae-8265-4f47490e77b3.png)
+
+<a name="3.5.3"></a>
+
+# Задание 3.5.3
+
+![3 5 3](https://user-images.githubusercontent.com/114404329/210119597-d3a0a80f-2ff4-45c8-ad7a-acbefc799d2c.png)
+
+
 
